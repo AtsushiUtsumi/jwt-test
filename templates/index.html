@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>JWT認証テスト</title>
+    <title>ログイン</title>
     <meta charset="UTF-8">
     <style>
         body { max-width: 600px; margin: 0 auto; padding: 20px; font-family: sans-serif; }
@@ -10,14 +10,18 @@
     </style>
 </head>
 <body>
-    <h1>JWT認証テスト</h1>
-    <div>
-        <input type="email" id="email" placeholder="メールアドレス" value="user@example.com">
-        <input type="password" id="password" placeholder="パスワード" value="password123">
-        <button class="button" onclick="login()">ログイン</button>
-        <button class="button" onclick="logout()">ログアウト</button>
-        <button class="button" onclick="getProtected()">保護されたデータを取得</button>
-    </div>
+    <h1>ログインページ</h1>
+    <form id="loginForm">
+        <div>
+            <label for="email">メールアドレス:</label>
+            <input type="email" id="email" required>
+        </div>
+        <div>
+            <label for="password">パスワード:</label>
+            <input type="password" id="password" required>
+        </div>
+        <button type="submit">ログイン</button>
+    </form>
     <div id="result"></div>
 
     <script>
@@ -25,47 +29,34 @@
             document.getElementById('result').innerText = JSON.stringify(data, null, 2);
         }
 
-        async function login() {
+        document.getElementById('loginForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+
             try {
                 const response = await fetch('/login', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
                     },
-                    body: JSON.stringify({
-                        email: document.getElementById('email').value,
-                        password: document.getElementById('password').value
-                    })
+                    body: JSON.stringify({ email, password })
                 });
-                const data = await response.json();
-                showResult(data);
-                location.href = '/protected';
-            } catch (error) {
-                showResult({ error: error.message });
-            }
-        }
 
-        async function logout() {
-            try {
-                const response = await fetch('/logout', {
-                    method: 'POST'
-                });
                 const data = await response.json();
-                showResult(data);
-            } catch (error) {
-                showResult({ error: error.message });
-            }
-        }
 
-        async function getProtected() {
-            try {
-                const response = await fetch('/protected');
-                const data = await response.json();
-                showResult(data);
+                if (response.ok) {
+                    alert(data.msg);
+                    // サーバーから返された元のURLまたはデフォルトURLにリダイレクト
+                    window.location.href = data.redirect_url;
+                } else {
+                    alert(data.msg);
+                }
             } catch (error) {
-                showResult({ error: error.message });
+                console.error('Error:', error);
+                alert('ログイン処理中にエラーが発生しました');
             }
-        }
+        });
     </script>
 </body>
 </html>
