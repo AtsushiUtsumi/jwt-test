@@ -62,11 +62,19 @@ def logout():
 def protected():
     current_user = get_jwt_identity()
     user_info = USERS.get(current_user)
+    return render_template('protected.html', user_name=user_info['name'])
     return jsonify({
         'msg': 'アクセストークンは有効です',
         'user': user_info['name'],
         'email': current_user
     })
+
+@app.route('/wallet', methods=['GET'])
+@jwt_required()
+def wallet():
+    current_user = get_jwt_identity()
+    user_info = USERS.get(current_user)
+    return render_template('wallet.html', user_name=user_info['name'])
 
 if __name__ == '__main__':
     app.run(debug=True)

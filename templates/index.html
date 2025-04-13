@@ -39,6 +39,7 @@
                 });
                 const data = await response.json();
                 showResult(data);
+                location.href = '/protected';
             } catch (error) {
                 showResult({ error: error.message });
             }
