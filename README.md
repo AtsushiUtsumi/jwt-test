@@ -5,5 +5,5 @@ JWT認証テスト
 ```
 python -m venv .venv
 .venv/Scripts/Activate
-pip install flask flask-jwt-extended python-dotenv
+pip install -r requirements.txt
 ```
