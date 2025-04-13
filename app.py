@@ -1,4 +1,4 @@
-from flask import Flask, request, jsonify, make_response, render_template
+from flask import Flask, request, jsonify, make_response, render_template, redirect, url_for
 from flask_jwt_extended import JWTManager, create_access_token, get_jwt_identity, jwt_required, set_access_cookies, unset_jwt_cookies
 from datetime import timedelta
 import os
@@ -16,6 +16,15 @@ app.config['JWT_COOKIE_CSRF_PROTECT'] = True
 app.config['JWT_ACCESS_TOKEN_EXPIRES'] = timedelta(hours=1)
 
 jwt = JWTManager(app)
+
+# 認証エラーハンドラーの追加
+@jwt.unauthorized_loader
+def unauthorized_callback(callback):
+    return redirect(url_for('index'))
+
+@jwt.invalid_token_loader
+def invalid_token_callback(callback):
+    return redirect(url_for('index'))
 
 # テスト用のユーザー情報（実際のアプリケーションではデータベースを使用してください）
 USERS = {
